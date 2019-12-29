@@ -36,6 +36,10 @@
                     {
                         "key": "Email",
                         "value": "henrik@vindshoej.dk"
+                    },
+                    {
+                        "key": "Phone",
+                        "value": "+4520706897"
                     }
                ],
                "group": 1
@@ -114,7 +118,7 @@
         <script>
         "use strict";
 
-        var rectWidth = 250;
+        var rectWidth = 350;
         var lineHeight = 24;
         var textPadding = 12;
 
@@ -150,13 +154,40 @@
                 .attr("class", "link")
                 .style("stroke", "rgb(200,200,200)")
                 .style("stroke-width", "1");
-                
+
+        var node_drag = d3.behavior.drag()
+            .on("dragstart", dragstart)
+            .on("drag", dragmove)
+            .on("dragend", dragend);
+        
+        function dragstart(d, i) {
+            force.stop() // stops the force auto positioning before you start dragging
+        }
+
+        function dragmove(d, i) {
+            d.px += d3.event.dx;
+            d.py += d3.event.dy;
+            d.x += d3.event.dx;
+            d.y += d3.event.dy;
+        }
+
+        function dragend(d, i) {
+            d.fixed = true; // of course set the node to fixed so the force doesn't include the node in its auto positioning stuff
+            force.resume();
+        }
+
+        function releasenode(d) {
+            d.fixed = false; // of course set the node to fixed so the force doesn't include the node in its auto positioning stuff
+            force.resume();
+        }        
+
         var nodes = svg.selectAll(".node")
             .data(graph.nodes)
             .enter()
             .append("g")
             .append("svg")
-            .call(force.drag);
+            .on('dblclick', releasenode)
+            .call(node_drag);
 
         var texts = nodes.selectAll("text")
             .data(d => d.attributes)
@@ -166,12 +197,6 @@
                 .attr("y", (d, i) =>  lineHeight + i * lineHeight)
                 .attr("x", textPadding)
                 .text(d => d.key + ": " + d.value);
-
-        nodes.each(node => 
-        {
-            var height = node.attributes.length * lineHeight;
-            console.log(height);
-        });
 
         var rects = nodes.selectAll("rect")
             .data(d => function(d) { return d; })
@@ -217,8 +242,9 @@
             return numberOfTextElements * lineHeight + textPadding;
         }
 
-        var padding = 10,
-            radius = 150;
+        
+        var padding = 100,
+            radius = 80;
 
         function collide(alpha) {
             var quadtree = d3.geom.quadtree(graph.nodes);
@@ -245,6 +271,7 @@
                 });
             };
         }
+        
         </script>
     </body>
 </html>
