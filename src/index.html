@@ -115,8 +115,8 @@
         "use strict";
 
         var rectWidth = 250;
-        var rectHeight = 200;
         var lineHeight = 24;
+        var textPadding = 12;
 
         var color = d3.scale.category20();
 
@@ -151,32 +151,45 @@
                 .style("stroke", "rgb(200,200,200)")
                 .style("stroke-width", "1");
                 
-        var node = svg.selectAll(".node")
+        var nodes = svg.selectAll(".node")
             .data(graph.nodes)
             .enter()
             .append("g")
             .append("svg")
             .call(force.drag);
 
-        var rects = node.selectAll("rect")
-            .data(d => function(d) { return d; })
-            .enter()
-            .append("rect")
-                .attr("width", rectWidth)
-                .attr("height", rectHeight)
-                .attr("opacity", "10%");
-
-        var texts = node.selectAll("text")
+        var texts = nodes.selectAll("text")
             .data(d => d.attributes)
             .enter()
             .append("text")
-            .attr("y", 
-                function(d, i)
-                {
-                    return lineHeight + i * lineHeight;
-                })
-            .attr("x", 12)
-            .text(d => d.key + ": " + d.value);
+                .attr("class", "keyvalue")
+                .attr("y", (d, i) =>  lineHeight + i * lineHeight)
+                .attr("x", textPadding)
+                .text(d => d.key + ": " + d.value);
+
+        nodes.each(node => 
+        {
+            var height = node.attributes.length * lineHeight;
+            console.log(height);
+        });
+
+        var rects = nodes.selectAll("rect")
+            .data(d => function(d) { return d; })
+            .enter()
+            .append("rect")
+                .attr("width", 
+                    function()
+                    {
+                        //return this.parentElement.getElementsByClassName("keyvalue").length * lineHeight;
+                        return rectWidth;                        
+                    })
+                .attr("height",
+                    function() 
+                    { 
+                        var numberOfTextElements = this.parentElement.getElementsByClassName("keyvalue").length;
+                        return rectangleHeight(numberOfTextElements); 
+                    })
+                .attr("opacity", "10%");
 
         force.on(
             "tick", 
@@ -184,16 +197,25 @@
             {
                 link
                     .attr("x1", function (d) { return d.source.x + rectWidth / 2; })
-                    .attr("y1", function (d) { return d.source.y + rectHeight / 2 })
+                    .attr("y1", function (d) { return d.source.y + rectangleHeight(d.source.attributes.length) / 2 })
                     .attr("x2", function (d) { return d.target.x + rectWidth / 2; })
-                    .attr("y2", function (d) { return d.target.y + rectHeight / 2; });
+                    .attr("y2", function (d) { return d.target.y + rectangleHeight(d.target.attributes.length) / 2 })
 
-                node
-                    .attr("x", function (d) { return d.x; })
+                nodes
+                    .attr("x", 
+                        function (d) 
+                        { 
+                            return d.x;
+                        })
                     .attr("y", function (d) { return d.y; });
                 
-                node.each(collide(0.5));
+                nodes.each(collide(0.5));
             });
+
+        function rectangleHeight(numberOfTextElements)
+        {
+            return numberOfTextElements * lineHeight + textPadding;
+        }
 
         var padding = 10,
             radius = 150;
