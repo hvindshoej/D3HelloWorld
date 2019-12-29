@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+    <head>
+        <title>Bootstrap 4 Layout</title>
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:400,800">
+        <link rel='stylesheet' href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="/css/bootstrap.css">
+        <link rel="stylesheet" href="/css/styles.css">
+    </head>
+
+    <body height="100vh" min-height="100vh">
+
+        <script src="/js/jquery.min.js"></script>
+        <script src="/js/popper.min.js"></script>
+        <script src="/js/bootstrap.min.js"></script>
+
+        <script src="https://d3js.org/d3.v3.js"></script>
+
+        <script type="application/json" id="mis">
+        {
+            "nodes": [
+            {
+               "id": "f0e305ae-a878-4386-a83a-48e42564b638",
+               "attributes": [
+                  {
+                     "key": "Name",
+                     "value": "Henrik Vindshøj"
+                  },
+                  {
+                     "key": "Email",
+                     "value": "henrik@vindshoej.dk"
+                  }
+               ],
+               "group": 1
+            },
+            {
+               "id": "00755547-b688-4487-bf94-72189aec828b",
+               "attributes": [
+                  {
+                     "key": "Name",
+                     "value": "Else Vindshøj"
+                  },
+                  {
+                     "key": "Email",
+                     "value": "else@whoelse.dk"
+                  }
+               ],
+               "group": 1
+            },
+            {
+               "id": "06d66f0c-6d7c-48d1-8635-dffcb470d88f",
+               "attributes": [
+                  {
+                     "key": "Name",
+                     "value": "Lauge Vindshøj"
+                  },
+                  {
+                     "key": "Email",
+                     "value": "lauge@vindshoej.dk"
+                  }
+               ],
+               "group": 4
+            },
+            {
+               "id": "c5959882-61ac-48ad-8bce-a0d5701e29e9",
+               "attributes": [
+                  {
+                     "key": "Name",
+                     "value": "Crazy Guy"
+                  },
+                  {
+                     "key": "email",
+                     "value": "crazy@hacker.ru"
+                  }
+               ],
+               "group": 2
+            }
+         ],
+         "links": [
+            {
+               "source": 3,
+               "target": 2
+            },
+            {
+               "source": 0,
+               "target": 1
+            },
+            {
+               "source": 2,
+               "target": 1
+            }
+         ]
+        }</script>
+
+        <script>
+        "use strict";
+
+        var rectWidth = 250;
+        var rectHeight = 200;
+        var lineHeight = 24;
+
+        var color = d3.scale.category20();
+
+        var svg = d3.select("body")
+            .append("svg")
+                .attr("id", "svg")
+                .attr("width", "100vw")
+                .attr("min-width", "100vw")
+                .attr("height", "100vh")
+                .attr("min-height", "100vh");
+
+        var width = document.getElementById('svg').clientWidth;
+        var height = document.getElementById('svg').clientHeight;
+
+        var force = d3.layout.force()
+            .charge(-120)
+            .linkDistance(200)
+            .size([width, height]);
+
+        var mis = document.getElementById('mis').innerHTML;
+        var graph = JSON.parse(mis);
+
+        force.nodes(graph.nodes)
+            .links(graph.links)
+            .start();
+
+        var link = svg.selectAll(".link")
+            .data(graph.links)
+            .enter()
+            .append("line")
+                .attr("class", "link")
+                .style("stroke", "rgb(200,200,200)")
+                .style("stroke-width", "1");
+                
+        var node = svg.selectAll(".node")
+            .data(graph.nodes)
+            .enter()
+            .append("g")
+            .append("svg")
+            .call(force.drag);
+
+        var rects = node.selectAll("rect")
+            .data(d => function(d) { return d; })
+            .enter()
+            .append("rect")
+                .attr("width", rectWidth)
+                .attr("height", rectHeight)
+                .attr("opacity", "10%");
+
+        var texts = node.selectAll("text")
+            .data(d => d.attributes)
+            .enter()
+            .append("text")
+            .attr("y", 
+                function(d, i)
+                {
+                    return lineHeight + i * lineHeight;
+                })
+            .attr("x", 12)
+            .text(d => d.key + ": " + d.value);
+
+        force.on(
+            "tick", 
+            function () 
+            {
+                link
+                    .attr("x1", function (d) { return d.source.x + rectWidth / 2; })
+                    .attr("y1", function (d) { return d.source.y + rectHeight / 2 })
+                    .attr("x2", function (d) { return d.target.x + rectWidth / 2; })
+                    .attr("y2", function (d) { return d.target.y + rectHeight / 2; });
+
+                node
+                    .attr("x", function (d) { return d.x; })
+                    .attr("y", function (d) { return d.y; });
+                
+                node.each(collide(0.5));
+            });
+
+        var padding = 10,
+            radius = 150;
+
+        function collide(alpha) {
+            var quadtree = d3.geom.quadtree(graph.nodes);
+            return function (d) {
+                var rb = 2 * radius + padding,
+                    nx1 = d.x - rb,
+                    nx2 = d.x + rb,
+                    ny1 = d.y - rb,
+                    ny2 = d.y + rb;
+                quadtree.visit(function (quad, x1, y1, x2, y2) {
+                    if (quad.point && (quad.point !== d)) {
+                        var x = d.x - quad.point.x,
+                            y = d.y - quad.point.y,
+                            l = Math.sqrt(x * x + y * y);
+                        if (l < rb) {
+                            l = (l - rb) / l * alpha;
+                            d.x -= x *= l;
+                            d.y -= y *= l;
+                            quad.point.x += x;
+                            quad.point.y += y;
+                        }
+                    }
+                    return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
+                });
+            };
+        }
+        </script>
+    </body>
+</html>

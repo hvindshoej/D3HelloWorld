@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<body>
+<script src="https://d3js.org/d3.v3.js"></script>
+<script>
+
+var data = 
+[
+    ["colours", "green", "blue", "Red", "hej"],
+    ["shapes", "square", "triangle"],
+    ["languages", "javascript", "c++"]
+];
+
+var svg = d3.select("body")
+    .append("svg")
+    .attr("width", 500)
+    .attr("height", 200);
+
+/*
+The transform property does a 2D or 3D transformation to an element.
+
+The translate(x,y) method remaps the (0,0) position.
+x	The value to add to horizontal (x) coordinates	
+y	The value to add to vertical (y) coordinates
+*/
+
+var groups = svg.selectAll("groups")
+    .data(data)
+    .enter()
+    .append("g")
+    .attr("transform", 
+	  function(d, i)
+	  {
+	    console.log("set transform: " + i + " " + d);
+	    return "translate(" + (50 + i * 100) + ",0)"
+	  });
+
+var texts = groups.selectAll("texts")
+    .data(d => d)
+    .enter()
+    .append("text")
+    .attr("y", 
+	  function(d, i)
+	  {
+	    console.log("set text.y: " + i + " " + d);
+	    return 10 + i * 20;
+	  })
+    .text(
+	  function(d)
+	  {
+	    console.log("set text: " + d);
+	    return d;
+	  });
+
+</script>
