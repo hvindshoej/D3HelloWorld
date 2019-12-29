@@ -25,76 +25,46 @@
             {
                 "attributes":
                 [
-                    {
-                        "key": "Id",
-                        "value": "f0e305ae-a878-4386-a83a-48e42564b638"
-                    },
-                    {
-                        "key": "Name",
-                        "value": "Henrik Vindshøj"
-                    },
-                    {
-                        "key": "Email",
-                        "value": "henrik@vindshoej.dk"
-                    },
-                    {
-                        "key": "Phone",
-                        "value": "+4520706897"
-                    }
+                    { "key": "Id", "value": "f0e305ae-a878-4386-a83a-48e42564b638" },
+                    { "key": "Name", "value": "Henrik Vindshøj" },
+                    { "key": "Email", "value": "henrik@vindshoej.dk" },
+                    { "key": "Phone", "value": "+4520706897" }
                ],
                "group": 1
             },
             {
                 "attributes": 
                 [
-                    {
-                        "key": "Id",
-                        "value": "00755547-b688-4487-bf94-72189aec828b"
-                    },
-                    {
-                        "key": "Name",
-                        "value": "Else Vindshøj"
-                    },
-                    {
-                        "key": "Email",
-                        "value": "else@whoelse.dk"
-                    }
+                    { "key": "Id", "value": "00755547-b688-4487-bf94-72189aec828b" },
+                    { "key": "Name", "value": "Else Vindshøj" },
+                    { "key": "Email", "value": "else@whoelse.dk" }
                 ],
                "group": 1
             },
             {
                 "attributes": 
                 [
-                    {
-                        "key": "Id",
-                        "value": "06d66f0c-6d7c-48d1-8635-dffcb470d88f"
-                    },
-                    {
-                        "key": "Name",
-                        "value": "Lauge Vindshøj"
-                    },
-                    {
-                        "key": "Email",
-                        "value": "lauge@vindshoej.dk"
-                    }
+                    { "key": "Id", "value": "06d66f0c-6d7c-48d1-8635-dffcb470d88f" },
+                    { "key": "Name", "value": "Lauge Vindshøj" },
+                    { "key": "Email", "value": "lauge@vindshoej.dk" }
                 ],
                 "group": 4
             },
             {
                 "attributes": 
                 [
-                    {
-                        "key": "Id",
-                        "value": "c5959882-61ac-48ad-8bce-a0d5701e29e9"
-                    },
-                    {
-                        "key": "Name",
-                        "value": "Crazy Guy"
-                    },
-                    {
-                        "key": "Email",
-                        "value": "crazy@hacker.ru"
-                    }
+                    { "key": "Id", "value": "c5959882-61ac-48ad-8bce-a0d5701e29e9" },
+                    { "key": "Name", "value": "Crazy Guy" },
+                    { "key": "Email", "value": "crazy@hacker.ru" }
+                ],
+                "group": 2
+            },
+            {
+                "attributes": 
+                [
+                    { "key": "Id", "value": "22d667a9-d93b-402e-a3f8-23de08e4c003" },
+                    { "key": "Name", "value": "Crazy Man" },
+                    { "key": "Email", "value": "kong@gulerod.ru" }
                 ],
                 "group": 2
             }
@@ -147,14 +117,6 @@
             .links(graph.links)
             .start();
 
-        var link = svg.selectAll(".link")
-            .data(graph.links)
-            .enter()
-            .append("line")
-                .attr("class", "link")
-                .style("stroke", "rgb(200,200,200)")
-                .style("stroke-width", "1");
-
         var node_drag = d3.behavior.drag()
             .on("dragstart", dragstart)
             .on("drag", dragmove)
@@ -181,6 +143,14 @@
             force.resume();
         }        
 
+        var links = svg.selectAll(".link")
+            .data(graph.links)
+            .enter()
+            .append("line")
+                .attr("class", "link")
+                .style("stroke", "rgb(0,0,0)")
+                .style("stroke-width", "1");
+
         var nodes = svg.selectAll(".node")
             .data(graph.nodes)
             .enter()
@@ -202,38 +172,30 @@
             .data(d => function(d) { return d; })
             .enter()
             .append("rect")
-                .attr("width", 
-                    function()
-                    {
-                        //return this.parentElement.getElementsByClassName("keyvalue").length * lineHeight;
-                        return rectWidth;                        
-                    })
+                .attr("width", rectWidth)
                 .attr("height",
                     function() 
                     { 
                         var numberOfTextElements = this.parentElement.getElementsByClassName("keyvalue").length;
                         return rectangleHeight(numberOfTextElements); 
                     })
+                .style("stroke", "rgb(0,0,255)")
                 .attr("opacity", "10%");
 
         force.on(
             "tick", 
             function () 
             {
-                link
+                links
                     .attr("x1", function (d) { return d.source.x + rectWidth / 2; })
                     .attr("y1", function (d) { return d.source.y + rectangleHeight(d.source.attributes.length) / 2 })
                     .attr("x2", function (d) { return d.target.x + rectWidth / 2; })
                     .attr("y2", function (d) { return d.target.y + rectangleHeight(d.target.attributes.length) / 2 })
 
                 nodes
-                    .attr("x", 
-                        function (d) 
-                        { 
-                            return d.x;
-                        })
+                    .attr("x", function (d) { return d.x; })
                     .attr("y", function (d) { return d.y; });
-                
+
                 nodes.each(collide(0.5));
             });
 
@@ -241,7 +203,6 @@
         {
             return numberOfTextElements * lineHeight + textPadding;
         }
-
         
         var padding = 100,
             radius = 80;
