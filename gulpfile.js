@@ -14,7 +14,6 @@ var browserSync = require("browser-sync").create();
 var sass = require("gulp-sass");
 var d3 = require("d3")
 
-// Compile sass into CSS & auto-inject into browsers
 gulp.task(MoveSassTask, function() {
   return gulp
     .src([
@@ -25,7 +24,6 @@ gulp.task(MoveSassTask, function() {
     .pipe(browserSync.stream());
 });
 
-// Move the javascript files
 gulp.task(MoveJavaScriptTask, function() {
   return gulp
     .src([
@@ -39,17 +37,13 @@ gulp.task(MoveJavaScriptTask, function() {
     .pipe(browserSync.stream());
 });
 
-// Move the html files
 gulp.task(MoveHtmlTask, function() {
   return gulp
-    .src([
-      htmlSource
-    ])
+    .src([htmlSource])
     .pipe(gulp.dest("build"))
     .pipe(browserSync.stream());
 });
 
-// Static Server + watching scss/html files
 gulp.task(
   serveTask,
   gulp.series(
