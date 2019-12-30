@@ -1,0 +1,4 @@
+Clone repository
+Start a command prompt and go to the folder of the repository
+Run 'npm install'
+Run 'gulp'
