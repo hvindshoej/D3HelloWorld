@@ -104,8 +104,4 @@ dist
 .tern-port
 
 # Auto generated files
-src/js/bootstrap.min.js
-src/css/bootstrap.css
-src/css/styles.css
-src/js/jquery.min.js
-src/js/popper.min.js
+build/
