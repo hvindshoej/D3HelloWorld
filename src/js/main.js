@@ -17,32 +17,8 @@ var height = document.getElementById('svg').clientHeight;
 var force = d3.layout.force()
     .charge(-120)
     .linkDistance(200)
-    .size([width, height]);
-
-force.on(
-    "tick", 
-    function () 
-    {
-        if (links == null || nodes == null)
-            return;
-
-        links
-            .attr("x1", function (d) { return d.source.x + rectWidth / 2; })
-            .attr("y1", function (d) { return d.source.y + rectangleHeight(d.source.attributes.length) / 2 })
-            .attr("x2", function (d) { return d.target.x + rectWidth / 2; })
-            .attr("y2", function (d) { return d.target.y + rectangleHeight(d.target.attributes.length) / 2 })
-
-        nodes
-            .attr("x", function (d) { return d.x; })
-            .attr("y", function (d) { return d.y; });
-
-        nodes.each(collide(0.5));
-    });
-
-var node_drag = d3.behavior.drag()
-    .on("dragstart", dragstart)
-    .on("drag", dragmove)
-    .on("dragend", dragend);
+    .size([width, height])
+    .on("tick", tick);
 
 function LoadJson(jsonString)
 {
@@ -54,7 +30,9 @@ function LoadJson(jsonString)
     svg = d3.select("svg")
 
     links = svg.selectAll(".link")
-        .data(graph.links)
+        .data(graph.links);
+    links.exit().remove();
+    var linksEnter = links
         .enter()
         .append("line")
             .attr("class", "link")
@@ -63,15 +41,18 @@ function LoadJson(jsonString)
             .attr("opacity", "10%");
 
     nodes = svg.selectAll(".node")
-        .data(graph.nodes)
+        .data(graph.nodes);
+    nodes.exit().remove();
+    var nodesEnter = nodes        
         .enter()
         .append("g")
-        .append("svg")
-        .on('dblclick', releasenode)
-        .call(node_drag);
+            .attr("class", "node")
+        .append("svg");
 
-    texts = nodes.selectAll("text")
+    texts = nodes.selectAll(".keyvalue")
         .data(d => d.attributes)
+    texts.exit().remove();
+    var textsEnter = texts
         .enter()
         .append("text")
             .attr("class", "keyvalue")
@@ -79,10 +60,13 @@ function LoadJson(jsonString)
             .attr("x", textPadding)
             .text(d => d.key + ": " + d.value);
 
-    rects = nodes.selectAll("rect")
-        .data(d => function(d) { return d; })
+    rects = nodes.selectAll(".rect")
+        .data(d => function(d) { return d; });
+    rects.exit().remove();
+    var rectsEnter = rects
         .enter()
         .append("rect")
+            .attr("class", "keyvalue")
             .attr("width", rectWidth)
             .attr("height",
                 function() 
@@ -99,30 +83,26 @@ function LoadJson(jsonString)
         .start();
 }
 
-function dragstart(d, i) {
-    force.stop() // stops the force auto positioning before you start dragging
-}
-
-function dragmove(d, i) {
-    d.px += d3.event.dx;
-    d.py += d3.event.dy;
-    d.x += d3.event.dx;
-    d.y += d3.event.dy;
-}
-
-function dragend(d, i) {
-    d.fixed = true; // of course set the node to fixed so the force doesn't include the node in its auto positioning stuff
-    force.resume();
-}
-
-function releasenode(d) {
-    d.fixed = false; // of course set the node to fixed so the force doesn't include the node in its auto positioning stuff
-    force.resume();
-}        
-
 function rectangleHeight(numberOfTextElements)
 {
     return numberOfTextElements * lineHeight + textPadding;
+}
+
+function tick() {
+    if (links == null || nodes == null)
+        return;
+
+    links
+        .attr("x1", function (d) { return d.source.x + rectWidth / 2; })
+        .attr("y1", function (d) { return d.source.y + rectangleHeight(d.source.attributes.length) / 2 })
+        .attr("x2", function (d) { return d.target.x + rectWidth / 2; })
+        .attr("y2", function (d) { return d.target.y + rectangleHeight(d.target.attributes.length) / 2 })
+
+    nodes
+        .attr("x", function (d) { return d.x; })
+        .attr("y", function (d) { return d.y; });
+
+    nodes.each(collide(0.5));
 }
 
 function collide(alpha) {

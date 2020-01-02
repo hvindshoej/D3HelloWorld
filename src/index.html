@@ -60,46 +60,11 @@
                     { "key": "Email", "value": "else@whoelse.dk" }
                 ],
                "group": 1
-            },
-            {
-                "attributes": 
-                [
-                    { "key": "Id", "value": "06d66f0c-6d7c-48d1-8635-dffcb470d88f" },
-                    { "key": "Name", "value": "Lauge Vindshøj" },
-                    { "key": "Email", "value": "lauge@vindshoej.dk" }
-                ],
-                "group": 4
-            },
-            {
-                "attributes": 
-                [
-                    { "key": "Id", "value": "c5959882-61ac-48ad-8bce-a0d5701e29e9" },
-                    { "key": "Name", "value": "Crazy Guy" },
-                    { "key": "Email", "value": "crazy@hacker.ru" }
-                ],
-                "group": 2
-            },
-            {
-                "attributes": 
-                [
-                    { "key": "Id", "value": "22d667a9-d93b-402e-a3f8-23de08e4c003" },
-                    { "key": "Name", "value": "Crazy Man" },
-                    { "key": "Email", "value": "kong@gulerod.ru" }
-                ],
-                "group": 2
             }
          ],
          "links": [
             {
-               "source": 3,
-               "target": 2
-            },
-            {
                "source": 0,
-               "target": 1
-            },
-            {
-               "source": 2,
                "target": 1
             }
          ]
@@ -112,9 +77,9 @@
             $('textarea#json').val(mis);
             LoadJson(mis);
 
-            setTimeout(() => {
-                LoadJson(mis);
-            }, 1000);
+            // setTimeout(() => {
+            //     LoadJson(mis);
+            // }, 200);
 
         </script>
 
