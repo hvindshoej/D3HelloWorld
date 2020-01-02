@@ -4,13 +4,12 @@ const rectWidth = 350;
 const lineHeight = 24;
 const textPadding = 12;
 
-var svg = d3.select("body")
-    .append("svg")
-        .attr("id", "svg")
-        .attr("width", "100vw")
-        .attr("min-width", "100vw")
-        .attr("height", "100vh")
-        .attr("min-height", "100vh");
+var svg;
+var graph;
+var links;
+var nodes;
+var texts;
+var rects;
 
 var width = document.getElementById('svg').clientWidth;
 var height = document.getElementById('svg').clientHeight;
@@ -20,61 +19,13 @@ var force = d3.layout.force()
     .linkDistance(200)
     .size([width, height]);
 
-var mis = document.getElementById('mis').innerHTML;
-var graph = JSON.parse(mis);
-
-force.nodes(graph.nodes)
-    .links(graph.links)
-    .start();
-
-var node_drag = d3.behavior.drag()
-    .on("dragstart", dragstart)
-    .on("drag", dragmove)
-    .on("dragend", dragend);
-
-    var links = svg.selectAll(".link")
-    .data(graph.links)
-    .enter()
-    .append("line")
-        .attr("class", "link")
-        .style("stroke", "rgb(0,0,0)")
-        .style("stroke-width", "1");
-
-var nodes = svg.selectAll(".node")
-    .data(graph.nodes)
-    .enter()
-    .append("g")
-    .append("svg")
-    .on('dblclick', releasenode)
-    .call(node_drag);
-
-var texts = nodes.selectAll("text")
-    .data(d => d.attributes)
-    .enter()
-    .append("text")
-        .attr("class", "keyvalue")
-        .attr("y", (d, i) =>  lineHeight + i * lineHeight)
-        .attr("x", textPadding)
-        .text(d => d.key + ": " + d.value);
-
-var rects = nodes.selectAll("rect")
-    .data(d => function(d) { return d; })
-    .enter()
-    .append("rect")
-        .attr("width", rectWidth)
-        .attr("height",
-            function() 
-            { 
-                var numberOfTextElements = this.parentElement.getElementsByClassName("keyvalue").length;
-                return rectangleHeight(numberOfTextElements); 
-            })
-        .style("stroke", "rgb(0,0,255)")
-        .attr("opacity", "10%");
-
 force.on(
     "tick", 
     function () 
     {
+        if (links == null || nodes == null)
+            return;
+
         links
             .attr("x1", function (d) { return d.source.x + rectWidth / 2; })
             .attr("y1", function (d) { return d.source.y + rectangleHeight(d.source.attributes.length) / 2 })
@@ -87,6 +38,66 @@ force.on(
 
         nodes.each(collide(0.5));
     });
+
+var node_drag = d3.behavior.drag()
+    .on("dragstart", dragstart)
+    .on("drag", dragmove)
+    .on("dragend", dragend);
+
+function LoadJson(jsonString)
+{
+    if (jsonString.trim() == "")
+        return;
+
+    graph = JSON.parse(jsonString);
+
+    svg = d3.select("svg")
+
+    links = svg.selectAll(".link")
+        .data(graph.links)
+        .enter()
+        .append("line")
+            .attr("class", "link")
+            .style("stroke", "rgb(0,0,0)")
+            .style("stroke-width", "1")
+            .attr("opacity", "10%");
+
+    nodes = svg.selectAll(".node")
+        .data(graph.nodes)
+        .enter()
+        .append("g")
+        .append("svg")
+        .on('dblclick', releasenode)
+        .call(node_drag);
+
+    texts = nodes.selectAll("text")
+        .data(d => d.attributes)
+        .enter()
+        .append("text")
+            .attr("class", "keyvalue")
+            .attr("y", (d, i) =>  lineHeight + i * lineHeight)
+            .attr("x", textPadding)
+            .text(d => d.key + ": " + d.value);
+
+    rects = nodes.selectAll("rect")
+        .data(d => function(d) { return d; })
+        .enter()
+        .append("rect")
+            .attr("width", rectWidth)
+            .attr("height",
+                function() 
+                { 
+                    var numberOfTextElements = this.parentElement.getElementsByClassName("keyvalue").length;
+                    return rectangleHeight(numberOfTextElements); 
+                })
+            .style("stroke", "rgb(0,0,255)")
+            .attr("opacity", "10%");
+
+    force
+        .nodes(graph.nodes)
+        .links(graph.links)
+        .start();
+}
 
 function dragstart(d, i) {
     force.stop() // stops the force auto positioning before you start dragging

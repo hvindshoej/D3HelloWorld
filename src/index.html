@@ -16,6 +16,29 @@
         <script src="/js/bootstrap.min.js"></script>
         <script src="/js/d3.min.js"></script>
 
+        <div class="container">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">json</span>
+                </div>
+                <textarea id="json" class="form-control" aria-label="json"></textarea>
+              </div>
+
+              <button type="button" id="loadJson" class="btn btn-primary">Load json</button>
+
+              <svg id="svg" width="100vw" min-width="100vw" height="100vh" min-height="100vh">
+                  
+              </svg>
+        </div>
+
+        <script>
+            $('#loadJson').on('click', function(event) {
+                event.preventDefault();
+                var json = $('textarea#json').val();
+                LoadJson(json);
+            });            
+        </script>
+
         <script type="application/json" id="mis">
         {
             "nodes": [
@@ -81,6 +104,19 @@
             }
          ]
         }</script>
+
         <script src="/js/main.js"></script>
+
+        <script>
+            var mis = document.getElementById('mis').innerHTML;
+            $('textarea#json').val(mis);
+            LoadJson(mis);
+
+            setTimeout(() => {
+                LoadJson(mis);
+            }, 1000);
+
+        </script>
+
     </body>
 </html>
