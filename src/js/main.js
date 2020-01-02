@@ -4,66 +4,76 @@ const rectWidth = 350;
 const lineHeight = 24;
 const textPadding = 12;
 
-var svg;
-var graph;
-var links;
-var nodes;
-var texts;
-var rects;
+var svg = d3.select("svg");
+
+var nodes = [];
+var links = [];
 
 var width = document.getElementById('svg').clientWidth;
 var height = document.getElementById('svg').clientHeight;
 
-var force = d3.layout.force()
-    .charge(-120)
-    .linkDistance(200)
-    .size([width, height])
-    .on("tick", tick);
+var simulation = d3.forceSimulation(nodes)
+    .force("charge", d3.forceManyBody().strength(-500))
+    .force("link", d3.forceLink(links).distance(500))
+    .force("x", d3.forceX())
+    .force("y", d3.forceY())
+    .alphaTarget(1)
+    .on("tick", ticked);
+
+var g = svg.append("g")
+    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+var link = g
+    .append("g")
+        .attr("stroke", "rgb(0,0,0)")
+        .attr("stroke-width", 1)
+        .attr("opacity", "10%")        
+    .selectAll(".link");
+
+var node = g
+    .append("g")
+        .attr("stroke", "rgb(0,0,0)")
+        .attr("stroke-width", 1)
+    .selectAll(".node");
 
 function LoadJson(jsonString)
 {
-    if (jsonString.trim() == "")
-        return;
+    var graph = JSON.parse(jsonString);
+    links = graph.links;
+    nodes = graph.nodes;
 
-    graph = JSON.parse(jsonString);
-
-    svg = d3.select("svg")
-
-    links = svg.selectAll(".link")
-        .data(graph.links);
-    links.exit().remove();
-    var linksEnter = links
+    link = link.data(links);
+    link.exit().remove();
+    link = link
         .enter()
         .append("line")
-            .attr("class", "link")
-            .style("stroke", "rgb(0,0,0)")
-            .style("stroke-width", "1")
-            .attr("opacity", "10%");
+        .merge(link);;
 
-    nodes = svg.selectAll(".node")
-        .data(graph.nodes);
-    nodes.exit().remove();
-    var nodesEnter = nodes        
+    node = node.data(nodes, function(d) { return d.id;} );
+    node.exit().remove();
+    node = node
         .enter()
         .append("g")
-            .attr("class", "node")
-        .append("svg");
+        .append("svg")
+        .merge(node);
 
-    texts = nodes.selectAll(".keyvalue")
+    var text = node.selectAll(".keyvalue")
         .data(d => d.attributes)
-    texts.exit().remove();
-    var textsEnter = texts
+    text.exit().remove();
+    text = text
         .enter()
         .append("text")
             .attr("class", "keyvalue")
+            .attr("stroke", "rgb(0,0,0)")
             .attr("y", (d, i) =>  lineHeight + i * lineHeight)
             .attr("x", textPadding)
-            .text(d => d.key + ": " + d.value);
+            .text(d => d.key + ": " + d.value)
+        .merge(text);
 
-    rects = nodes.selectAll(".rect")
+    var rects = node.selectAll(".rect")
         .data(d => function(d) { return d; });
     rects.exit().remove();
-    var rectsEnter = rects
+    rects = rects
         .enter()
         .append("rect")
             .attr("class", "keyvalue")
@@ -77,32 +87,14 @@ function LoadJson(jsonString)
             .style("stroke", "rgb(0,0,255)")
             .attr("opacity", "10%");
 
-    force
-        .nodes(graph.nodes)
-        .links(graph.links)
-        .start();
+    simulation.nodes(nodes);
+    simulation.force("link").links(links);
+    simulation.alpha(1).restart();
 }
 
 function rectangleHeight(numberOfTextElements)
 {
     return numberOfTextElements * lineHeight + textPadding;
-}
-
-function tick() {
-    if (links == null || nodes == null)
-        return;
-
-    links
-        .attr("x1", function (d) { return d.source.x + rectWidth / 2; })
-        .attr("y1", function (d) { return d.source.y + rectangleHeight(d.source.attributes.length) / 2 })
-        .attr("x2", function (d) { return d.target.x + rectWidth / 2; })
-        .attr("y2", function (d) { return d.target.y + rectangleHeight(d.target.attributes.length) / 2 })
-
-    nodes
-        .attr("x", function (d) { return d.x; })
-        .attr("y", function (d) { return d.y; });
-
-    nodes.each(collide(0.5));
 }
 
 function collide(alpha) {
@@ -132,4 +124,37 @@ function collide(alpha) {
             return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
         });
     };
+}
+
+function ticked() 
+{
+    node
+        .attr("x", function(d) 
+        { 
+            //console.log(d);
+            return d.x; 
+        })
+        .attr("y", function(d) 
+        { 
+            //return 0;
+            return d.y; 
+        });
+
+    link
+        .attr("x1", function (d) 
+        {
+            return d.source.x + rectWidth / 2; 
+        })
+        .attr("y1", function (d) 
+        {
+            return d.source.y + rectangleHeight(d.source.attributes.length) / 2;
+        })
+        .attr("x2", function (d) 
+        {
+             return d.target.x + rectWidth / 2; 
+        })
+        .attr("y2", function (d) 
+        { 
+            return d.target.y + rectangleHeight(d.target.attributes.length) / 2;
+        });
 }
