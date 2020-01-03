@@ -22,13 +22,28 @@
                   <span class="input-group-text">json</span>
                 </div>
                 <textarea id="json" class="form-control" aria-label="json"></textarea>
-              </div>
+            </div>
+            <button type="button" id="loadJson" class="btn btn-primary">Load json</button>
 
-              <button type="button" id="loadJson" class="btn btn-primary">Load json</button>
+            <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">json</span>
+                </div>
+                <textarea id="newNode" class="form-control" aria-label="json"></textarea>
+            </div>
+            <button type="button" id="addNode" class="btn btn-primary">Add Node</button>
 
-              <svg id="svg" width="100vw" min-width="100vw" height="100vh" min-height="100vh">
-                  
-              </svg>
+            <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">json</span>
+                </div>
+                <textarea id="newLink" class="form-control" aria-label="json"></textarea>
+            </div>
+            <button type="button" id="addLink" class="btn btn-primary">Add Link</button>
+
+            <svg id="svg" width="100vw" min-width="100vw" height="100vh" min-height="100vh">
+                
+            </svg>
         </div>
 
         <script>
@@ -36,6 +51,16 @@
                 event.preventDefault();
                 var json = $('textarea#json').val();
                 LoadJson(json);
+            });            
+            $('#addNode').on('click', function(event) {
+                event.preventDefault();
+                var json = $('textarea#newNode').val();
+                AddNode(json);
+            });            
+            $('#addLink').on('click', function(event) {
+                event.preventDefault();
+                var json = $('textarea#newLink').val();
+                AddLink(json);
             });            
         </script>
 
@@ -52,7 +77,8 @@
                     { "key": "Phone", "value": "+4520706897" }
                ],
                "group": 1
-            },
+            }
+            ,
             {
                 "id": "44556677",
                 "attributes": 
@@ -62,7 +88,8 @@
                     { "key": "Email", "value": "else@whoelse.dk" }
                 ],
                "group": 1
-            },
+            }
+            ,
             {
                 "id": "00755547",
                 "attributes": 
@@ -76,13 +103,10 @@
          ],
          "links": [
             {
-               "source": "f0e305ae",
-               "target": "44556677"
-            },
-            {
                "source": "44556677",
                "target": "00755547"
-            },
+            }
+            ,
             {
                "source": "f0e305ae",
                "target": "00755547"

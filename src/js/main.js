@@ -5,6 +5,7 @@ const lineHeight = 20;
 const textPadding = 12;
 
 var svg = d3.select("svg");
+var graph;
 
 var width = document.getElementById('svg').clientWidth;
 var height = document.getElementById('svg').clientHeight;
@@ -29,16 +30,32 @@ var node = g
         .attr("class", "node")
     .selectAll(".node");
 
+function AddNode(newNode)
+{
+    graph.nodes.push(JSON.parse(newNode));
+    restart();
+}
+
+function AddLink(newLink)
+{
+    graph.links.push(JSON.parse(newLink));
+    restart();
+}
+
 function LoadJson(jsonString)
 {
-    var graph = JSON.parse(jsonString);
+    graph = JSON.parse(jsonString);
+    restart();
+}
 
+function restart()
+{
     link = link.data(graph.links);
     link.exit().remove();
     link = link
         .enter()
         .append("line")
-        .merge(link);;
+        .merge(link);
 
     node = node.data(graph.nodes);
     node.exit().remove();
@@ -84,6 +101,7 @@ function LoadJson(jsonString)
 
     simulation.nodes(graph.nodes);
     simulation.force("link").links(graph.links);
+    simulation.alpha(1).restart();    
 }
 
 function ticked() 
