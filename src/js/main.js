@@ -46,6 +46,7 @@ function LoadJson(jsonString)
         .enter()
         .append("g")
         .append("svg")
+            .attr("id", d => d.id)
         .merge(node);
 
     var text = node.selectAll(".keyvalue")
@@ -60,10 +61,10 @@ function LoadJson(jsonString)
             .text(d => d.key + ": " + d.value)
         .merge(text);
 
-    var rects = node.selectAll(".rectangle")
+    var rect = node.selectAll(".rectangle")
         .data(d => function(d) { return d; });
-    rects.exit().remove();
-    rects = rects
+    rect.exit().remove();
+    rect = rect
         .enter()
         .append("rect")
             .attr("class", "rectangle")
@@ -79,22 +80,19 @@ function LoadJson(jsonString)
                         if (element.clientWidth > maxWidthOfKeyvalueElements)
                             maxWidthOfKeyvalueElements = element.clientWidth;
                     }
+
                     return maxWidthOfKeyvalueElements * 2;
                 })
             .attr("height",
                 function() 
                 { 
                     var numberOfTextElements = this.parentElement.getElementsByClassName("keyvalue").length;
-                    return rectangleHeight(numberOfTextElements);
-                });
+                    return numberOfTextElements * lineHeight + textPadding;
+                })
+            .merge(rect);
 
     simulation.nodes(graph.nodes);
     simulation.force("link").links(graph.links);
-}
-
-function rectangleHeight(numberOfTextElements)
-{
-    return numberOfTextElements * lineHeight + textPadding;
 }
 
 function ticked() 
@@ -104,8 +102,14 @@ function ticked()
         .attr("y", d => d.y);
 
     link
-        .attr("x1", d => d.source.x + rectWidth / 2)
-        .attr("y1", d => d.source.y + rectangleHeight(d.source.attributes.length) / 2)
-        .attr("x2", d => d.target.x + rectWidth / 2)
-        .attr("y2", d => d.target.y + rectangleHeight(d.target.attributes.length) / 2);
+        .attr("x1", d => d.source.x + getRectangle(d.source.id).width.animVal.value / 2)
+        .attr("y1", d => d.source.y + getRectangle(d.source.id).height.animVal.value / 2)
+        .attr("x2", d => d.target.x + getRectangle(d.target.id).width.animVal.value / 2)
+        .attr("y2", d => d.target.y + getRectangle(d.target.id).height.animVal.value / 2);
+}
+
+function getRectangle(id)
+{
+    var element = document.getElementById(id);
+    return element.getElementsByClassName("rectangle")[0];
 }
