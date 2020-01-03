@@ -21,15 +21,12 @@ var g = svg.append("g")
 
 var link = g
     .append("g")
-        .attr("stroke", "rgb(0,0,0)")
-        .attr("stroke-width", 1)
-        .attr("opacity", "10%")        
+        .attr("class", "link")
     .selectAll(".link");
 
 var node = g
     .append("g")
-        .attr("stroke", "rgb(0,0,0)")
-        .attr("stroke-width", 1)
+        .attr("class", "node")
     .selectAll(".node");
 
 function LoadJson(jsonString)
@@ -43,7 +40,7 @@ function LoadJson(jsonString)
         .append("line")
         .merge(link);;
 
-    node = node.data(graph.nodes, function(d) { return d.id;} );
+    node = node.data(graph.nodes);
     node.exit().remove();
     node = node
         .enter()
@@ -70,7 +67,20 @@ function LoadJson(jsonString)
         .enter()
         .append("rect")
             .attr("class", "rectangle")
-            .attr("width", rectWidth)
+            .attr("width", 
+                function() 
+                { 
+                    var keyvalueElements = this.parentElement.getElementsByClassName("keyvalue");
+                    var maxWidthOfKeyvalueElements = 0;
+
+                    for (let index = 0; index < keyvalueElements.length; index++) {
+                        const element = keyvalueElements[index];   
+
+                        if (element.clientWidth > maxWidthOfKeyvalueElements)
+                            maxWidthOfKeyvalueElements = element.clientWidth;
+                    }
+                    return maxWidthOfKeyvalueElements * 2;
+                })
             .attr("height",
                 function() 
                 { 
