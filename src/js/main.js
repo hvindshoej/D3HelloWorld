@@ -11,7 +11,7 @@ var width = document.getElementById('svg').clientWidth;
 var height = document.getElementById('svg').clientHeight;
 
 var simulation = d3.forceSimulation()
-    .force("charge", d3.forceManyBody().strength(-500))
+    .force("charge", d3.forceManyBody().strength(-1000))
     .force("link", d3.forceLink().id(function(d) { return d.id; }).distance(400))
     .force("x", d3.forceX())
     .force("y", d3.forceY())
@@ -64,6 +64,8 @@ function restart()
         .append("g")
         .append("svg")
             .attr("id", d => d.id)
+            .call(d3.drag()
+                .on("drag", d => (d.x = d3.event.x, d.y = d3.event.y, ticked())))
         .merge(node);
 
     var text = node.selectAll(".keyvalue")
