@@ -1,5 +1,13 @@
 // Variable Overrides 
 
+.keyvalue {
+    stroke: #000;
+    stroke-width: 1px;
+}
+
+.rectangle {
+    opacity: 10%;
+}
 
 // Bootstrap Sass Imports
 @import "node_modules/bootstrap/scss/bootstrap";

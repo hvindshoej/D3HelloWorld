@@ -6,9 +6,6 @@ const textPadding = 12;
 
 var svg = d3.select("svg");
 
-var nodes = [];
-var links = [];
-
 var width = document.getElementById('svg').clientWidth;
 var height = document.getElementById('svg').clientHeight;
 
@@ -17,7 +14,6 @@ var simulation = d3.forceSimulation()
     .force("link", d3.forceLink().id(function(d) { return d.id; }).distance(400))
     .force("x", d3.forceX())
     .force("y", d3.forceY())
-    .alphaTarget(1)
     .on("tick", ticked);
 
 var g = svg.append("g")
@@ -62,28 +58,25 @@ function LoadJson(jsonString)
         .enter()
         .append("text")
             .attr("class", "keyvalue")
-            .attr("stroke", "rgb(0,0,0)")
             .attr("y", (d, i) =>  lineHeight + i * lineHeight)
             .attr("x", textPadding)
             .text(d => d.key + ": " + d.value)
         .merge(text);
 
-    var rects = node.selectAll(".rect")
+    var rects = node.selectAll(".rectangle")
         .data(d => function(d) { return d; });
     rects.exit().remove();
     rects = rects
         .enter()
         .append("rect")
-            .attr("class", "keyvalue")
+            .attr("class", "rectangle")
             .attr("width", rectWidth)
             .attr("height",
                 function() 
                 { 
                     var numberOfTextElements = this.parentElement.getElementsByClassName("keyvalue").length;
-                    return rectangleHeight(numberOfTextElements); 
-                })
-            .style("stroke", "rgb(0,0,255)")
-            .attr("opacity", "10%");
+                    return rectangleHeight(numberOfTextElements);
+                });
 
     simulation.nodes(graph.nodes);
     simulation.force("link").links(graph.links);
