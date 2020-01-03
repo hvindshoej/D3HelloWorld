@@ -72,16 +72,7 @@ function LoadJson(jsonString)
                 function() 
                 { 
                     var keyvalueElements = this.parentElement.getElementsByClassName("keyvalue");
-                    var maxWidthOfKeyvalueElements = 0;
-
-                    for (let index = 0; index < keyvalueElements.length; index++) {
-                        const element = keyvalueElements[index];   
-
-                        if (element.clientWidth > maxWidthOfKeyvalueElements)
-                            maxWidthOfKeyvalueElements = element.clientWidth;
-                    }
-
-                    return maxWidthOfKeyvalueElements * 2;
+                    return Math.max(...Array.from(keyvalueElements, o => o.clientWidth)) * 2;
                 })
             .attr("height",
                 function() 
