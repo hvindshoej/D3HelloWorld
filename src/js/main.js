@@ -4,6 +4,8 @@ const rectWidth = 350;
 const lineHeight = 20;
 const textPadding = 12;
 
+var aggregateEventIndex = 0;
+
 var svg = d3.select("svg");
 var graph;
 
@@ -11,7 +13,7 @@ var width = document.getElementById('svg').clientWidth;
 var height = document.getElementById('svg').clientHeight;
 
 var simulation = d3.forceSimulation()
-    .force("charge", d3.forceManyBody().strength(-1000))
+    .force("charge", d3.forceManyBody().strength(-10000))
     .force("link", d3.forceLink().id(function(d) { return d.id; }).distance(400))
     .force("x", d3.forceX())
     .force("y", d3.forceY())
@@ -63,13 +65,20 @@ function restart()
         .enter()
         .append("g")
         .append("svg")
-            .attr("id", d => d.id)
+            .attr("id", d => d.AggregateId)
             .call(d3.drag()
-                .on("drag", d => (d.x = d3.event.x, d.y = d3.event.y, ticked())))
+                .on("drag", function (d)
+                {
+                    d.x = d3.event.x;
+                    d.y = d3.event.y;
+                    ticked();
+                }))
         .merge(node);
 
     var text = node.selectAll(".keyvalue")
-        .data(d => d.attributes)
+        .data(
+            d =>  d.AggregateEvents[aggregateEventIndex].Attributes,
+            d => d.Key + "-" + d.Value)
     text.exit().remove();
     text = text
         .enter()
@@ -77,9 +86,15 @@ function restart()
             .attr("class", "keyvalue")
             .attr("y", (d, i) =>  lineHeight + i * lineHeight)
             .attr("x", textPadding)
-            .text(d => d.key + ": " + d.value)
+            .attr("stroke-width", "2px")
+            .text(d => d.Key + ": " + d.Value)
         .merge(text);
 
+    text
+        .transition()
+        .duration(500)
+        .attr("stroke-width", "1px")
+        
     var rect = node.selectAll(".rectangle")
         .data(d => function(d) { return d; });
     rect.exit().remove();
@@ -109,8 +124,15 @@ function restart()
 function ticked() 
 {
     node
-        .attr("x", d => d.x)
-        .attr("y", d => d.y);
+        .attr("x", function(d)
+        {
+            console.log(d.id + " " + d.x + " " + d.fixed);
+            return d.x;
+        })
+        .attr("y", function(d)
+        { 
+            return d.y;
+        });
 
     link
         .attr("x1", d => d.source.x + getRectangle(d.source.id).width.animVal.value / 2)

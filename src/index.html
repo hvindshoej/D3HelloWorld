@@ -17,7 +17,7 @@
         <script src="/js/d3.min.js"></script>
 
         <div class="container">
-            <div class="input-group">
+            <div class="input-group mt-3">
                 <div class="input-group-prepend">
                   <span class="input-group-text">json</span>
                 </div>
@@ -25,7 +25,7 @@
             </div>
             <button type="button" id="loadJson" class="btn btn-primary">Load json</button>
 
-            <div class="input-group">
+            <div class="input-group mt-3">
                 <div class="input-group-prepend">
                   <span class="input-group-text">json</span>
                 </div>
@@ -33,13 +33,21 @@
             </div>
             <button type="button" id="addNode" class="btn btn-primary">Add Node</button>
 
-            <div class="input-group">
+            <div class="input-group mt-3">
                 <div class="input-group-prepend">
                   <span class="input-group-text">json</span>
                 </div>
                 <textarea id="newLink" class="form-control" aria-label="json"></textarea>
             </div>
             <button type="button" id="addLink" class="btn btn-primary">Add Link</button>
+
+            <div class="input-group mt-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">Aggregate Index</span>
+                </div>
+                <input id="aggregateIndex" type="text" class="form-control" placeholder="0" aria-label="0" aria-describedby="basic-addon1">
+            </div>            
+            <button type="button" id="updateAggregateIndex" class="btn btn-primary">Update Aggregate Index</button>
 
             <svg id="svg" width="100vw" min-width="100vw" height="100vh" min-height="100vh">
                 
@@ -62,57 +70,127 @@
                 var json = $('textarea#newLink').val();
                 AddLink(json);
             });            
+            $('#updateAggregateIndex').on('click', function(event) {
+                event.preventDefault();
+                aggregateEventIndex = $('#aggregateIndex').val();
+                restart();
+            });            
         </script>
 
         <script type="application/json" id="mis">
-        {
-            "nodes": [
             {
-                "id": "f0e305ae",
-                "attributes":
-                [
-                    { "key": "Id", "value": "f0e305ae" },
-                    { "key": "Name", "value": "Henrik Vindshøj" },
-                    { "key": "Email", "value": "henrik@vindshoej.dk" },
-                    { "key": "Phone", "value": "+4520706897" }
-               ],
-               "group": 1
+                "nodes": [{
+                    "AggregateId": "ceaea287-1796-4d47-9772-bb78543eb3b3",
+                    "AggregateType": "UserAggregate",
+                    "AggregateEvents": [{
+                            "EventType": "UserCreated",
+                            "EventDate": "2019-12-05T19:26:51.7533493+00:00",
+                            "EventData": "{\"UserId\":\"ceaea287-1796-4d47-9772-bb78543eb3b3\",\"CountryCode\":\"DK\"}",
+                            "Sequence": 0,
+                            "Origin": "NewPlatform",
+                            "Attributes": [{
+                                    "Key": "UserId",
+                                    "Value": "ceaea287-1796-4d47-9772-bb78543eb3b3"
+                                },
+                                {
+                                    "Key": "Name",
+                                    "Value": null
+                                },
+                                {
+                                    "Key": "CountryCode",
+                                    "Value": "DK"
+                                },
+                                {
+                                    "Key": "AliasId",
+                                    "Value": null
+                                },
+                                {
+                                    "Key": "IdentityId",
+                                    "Value": null
+                                },
+                                {
+                                    "Key": "Email",
+                                    "Value": null
+                                },
+                                {
+                                    "Key": "IdLevel",
+                                    "Value": null
+                                },
+                                {
+                                    "Key": "IdLevelTime",
+                                    "Value": null
+                                },
+                                {
+                                    "Key": "StateCode",
+                                    "Value": "Registration"
+                                },
+                                {
+                                    "Key": "CreateTime",
+                                    "Value": null
+                                },
+                                {
+                                    "Key": "Blocked",
+                                    "Value": "False"
+                                }
+                            ]
+                        },
+                        {
+                            "EventType": "AliasOnUserUpdatedV2",
+                            "EventDate": "2019-12-05T19:26:52.0462252+00:00",
+                            "EventData": "{\"UserId\":\"ceaea287-1796-4d47-9772-bb78543eb3b3\",\"AliasId\":\"084cea42-6736-4741-bb58-4161c6174bfc\",\"Alias\":\"+4511357173\",\"ChangedBy\":\"ceaea287-1796-4d47-9772-bb78543eb3b3\",\"UpdateTime\":\"2019-12-05T19:26:52.0462252+00:00\"}",
+                            "Sequence": 1,
+                            "Origin": "NewPlatform",
+                            "Attributes": [{
+                                    "Key": "UserId",
+                                    "Value": "ceaea287-1796-4d47-9772-bb78543eb3b3"
+                                },
+                                {
+                                    "Key": "Name",
+                                    "Value": null
+                                },
+                                {
+                                    "Key": "CountryCode",
+                                    "Value": "DK"
+                                },
+                                {
+                                    "Key": "AliasId",
+                                    "Value": "084cea42-6736-4741-bb58-4161c6174bfc"
+                                },
+                                {
+                                    "Key": "IdentityId",
+                                    "Value": null
+                                },
+                                {
+                                    "Key": "Email",
+                                    "Value": null
+                                },
+                                {
+                                    "Key": "IdLevel",
+                                    "Value": null
+                                },
+                                {
+                                    "Key": "IdLevelTime",
+                                    "Value": null
+                                },
+                                {
+                                    "Key": "StateCode",
+                                    "Value": "Registration"
+                                },
+                                {
+                                    "Key": "CreateTime",
+                                    "Value": null
+                                },
+                                {
+                                    "Key": "Blocked",
+                                    "Value": "False"
+                                }
+                            ]
+                        }
+                    ]
+                }],
+                "links": []
             }
-            ,
-            {
-                "id": "44556677",
-                "attributes": 
-                [
-                    { "key": "Id", "value": "44556677" },
-                    { "key": "Name", "value": "Else Vindshøj" },
-                    { "key": "Email", "value": "else@whoelse.dk" }
-                ],
-               "group": 1
-            }
-            ,
-            {
-                "id": "00755547",
-                "attributes": 
-                [
-                    { "key": "Id", "value": "00755547" },
-                    { "key": "Name", "value": "Else " },
-                    { "key": "Email", "value": "else@.dk" }
-                ],
-               "group": 1
-            }
-         ],
-         "links": [
-            {
-               "source": "44556677",
-               "target": "00755547"
-            }
-            ,
-            {
-               "source": "f0e305ae",
-               "target": "00755547"
-            }
-         ]
-        }</script>
+        </script>
 
         <script src="/js/main.js"></script>
 
