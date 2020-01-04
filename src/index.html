@@ -13,27 +13,17 @@
         <script src="/js/bootstrap.min.js"></script>
         <script src="/js/d3.min.js"></script>
 
-        <div class="input-group m-2">
-            <div class="input-group-prepend">
-                <span class="input-group-text">json</span>
-            </div>
-            <textarea id="newNode" class="form-control" aria-label="json">
-            </textarea>
-        </div>
-        <button type="button" id="addNode" class="btn btn-primary m-2">Add Node</button>
-
-
         <div class="row">
             <div class="col-sm">
                 <div class="input-group m-2">
                     <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">Aggregate Index</span>
+                        <span class="input-group-text" id="basic-addon1">Aggregate Id</span>
                     </div>
-                    <input id="aggregateIndex" type="text" class="form-control" placeholder="0" aria-label="0" aria-describedby="basic-addon1">
+                    <input id="aggregateId" type="text" class="form-control" aria-describedby="basic-addon1">
                 </div>            
             </div>
             <div class="col-sm">
-                <button type="button" id="updateAggregateIndex" class="btn btn-primary m-2">Update Aggregate Index</button>
+                <button type="button" id="getAggregate" class="btn btn-primary m-2">Get Aggregate</button>
             </div>
         </div>
 
@@ -55,14 +45,16 @@
         </svg>
 
         <script>
-            $('#addNode').on('click', function(event) {
+            $('#getAggregate').on('click', function(event) {
                 event.preventDefault();
-                var json = $('textarea#newNode').val();
-                AddNode(json);
-            });            
-            $('#updateAggregateIndex').on('click', function(event) {
-                event.preventDefault();
-                aggregateEventIndex = $('#aggregateIndex').val();
+                aggregateId = $('#aggregateId').val();
+
+                $.get("https://localhost:44337/api/v1/management/user?id=" + aggregateId, function(data){
+                    alert("Data: " + data);
+                });
+
+                console.log(aggregateId);
+
                 restart();
             });
         </script>
