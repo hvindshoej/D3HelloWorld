@@ -7,7 +7,8 @@ const textPadding = 12;
 var aggregateEventIndex = 0;
 
 var svg = d3.select("svg");
-var graph;
+var nodes = [];
+var links = [];
 
 var width = document.getElementById('svg').clientWidth;
 var height = document.getElementById('svg').clientHeight;
@@ -34,32 +35,26 @@ var node = g
 
 function AddNode(newNode)
 {
-    graph.nodes.push(JSON.parse(newNode));
+    nodes.push(JSON.parse(newNode));
     restart();
 }
 
 function AddLink(newLink)
 {
-    graph.links.push(JSON.parse(newLink));
-    restart();
-}
-
-function LoadJson(jsonString)
-{
-    graph = JSON.parse(jsonString);
+    links.push(JSON.parse(newLink));
     restart();
 }
 
 function restart()
 {
-    link = link.data(graph.links);
+    link = link.data(links);
     link.exit().remove();
     link = link
         .enter()
         .append("line")
         .merge(link);
 
-    node = node.data(graph.nodes);
+    node = node.data(nodes);
     node.exit().remove();
     node = node
         .enter()
@@ -116,23 +111,16 @@ function restart()
                 })
             .merge(rect);
 
-    simulation.nodes(graph.nodes);
-    simulation.force("link").links(graph.links);
+    simulation.nodes(nodes);
+    simulation.force("link").links(links);
     simulation.alpha(1).restart();    
 }
 
 function ticked() 
 {
     node
-        .attr("x", function(d)
-        {
-            console.log(d.id + " " + d.x + " " + d.fixed);
-            return d.x;
-        })
-        .attr("y", function(d)
-        { 
-            return d.y;
-        });
+        .attr("x", d =>  d.x)
+        .attr("y", d =>  d.y);
 
     link
         .attr("x1", d => d.source.x + getRectangle(d.source.id).width.animVal.value / 2)

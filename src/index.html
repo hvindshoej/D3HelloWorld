@@ -3,207 +3,228 @@
     <head>
         <title>Bootstrap 4 Layout</title>
         <meta http-equiv="x-ua-compatible" content="ie=edge">
-	    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
         <link rel="stylesheet" href="/css/bootstrap.css">
         <link rel="stylesheet" href="/css/styles.css">
     </head>
 
-    <body height="100vh" min-height="100vh">
-
+    <body> 
         <script src="/js/jquery.min.js"></script>
         <script src="/js/popper.min.js"></script>
         <script src="/js/bootstrap.min.js"></script>
         <script src="/js/d3.min.js"></script>
 
-        <div class="container">
-            <div class="input-group mt-3">
-                <div class="input-group-prepend">
-                  <span class="input-group-text">json</span>
-                </div>
-                <textarea id="json" class="form-control" aria-label="json"></textarea>
+        <div class="input-group m-2">
+            <div class="input-group-prepend">
+                <span class="input-group-text">json</span>
             </div>
-            <button type="button" id="loadJson" class="btn btn-primary">Load json</button>
+            <textarea id="newNode" class="form-control" aria-label="json">
+            </textarea>
+        </div>
+        <button type="button" id="addNode" class="btn btn-primary m-2">Add Node</button>
 
-            <div class="input-group mt-3">
-                <div class="input-group-prepend">
-                  <span class="input-group-text">json</span>
-                </div>
-                <textarea id="newNode" class="form-control" aria-label="json"></textarea>
+
+        <div class="row">
+            <div class="col-sm">
+                <div class="input-group m-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">Aggregate Index</span>
+                    </div>
+                    <input id="aggregateIndex" type="text" class="form-control" placeholder="0" aria-label="0" aria-describedby="basic-addon1">
+                </div>            
             </div>
-            <button type="button" id="addNode" class="btn btn-primary">Add Node</button>
-
-            <div class="input-group mt-3">
-                <div class="input-group-prepend">
-                  <span class="input-group-text">json</span>
-                </div>
-                <textarea id="newLink" class="form-control" aria-label="json"></textarea>
+            <div class="col-sm">
+                <button type="button" id="updateAggregateIndex" class="btn btn-primary m-2">Update Aggregate Index</button>
             </div>
-            <button type="button" id="addLink" class="btn btn-primary">Add Link</button>
-
-            <div class="input-group mt-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id="basic-addon1">Aggregate Index</span>
-                </div>
-                <input id="aggregateIndex" type="text" class="form-control" placeholder="0" aria-label="0" aria-describedby="basic-addon1">
-            </div>            
-            <button type="button" id="updateAggregateIndex" class="btn btn-primary">Update Aggregate Index</button>
-
-            <svg id="svg" width="100vw" min-width="100vw" height="100vh" min-height="100vh">
-                
-            </svg>
         </div>
 
+        <table class="table table-sm table-hover table-bordered table-striped m-2" id="binding-table">
+            <thead>
+                <tr>
+                    <th>EventType</th>
+                    <th>EventDate</th>
+                    <th>Sequence</th>
+                    <th>Origin</th>
+                    <th>EventData</th>
+                </tr>
+            </thead>
+            <tbody id="table_body">
+            </tbody>
+        </table>
+
+        <svg id="svg" width="100%" height="100vh">
+        </svg>
+
         <script>
-            $('#loadJson').on('click', function(event) {
-                event.preventDefault();
-                var json = $('textarea#json').val();
-                LoadJson(json);
-            });            
             $('#addNode').on('click', function(event) {
                 event.preventDefault();
                 var json = $('textarea#newNode').val();
                 AddNode(json);
             });            
-            $('#addLink').on('click', function(event) {
-                event.preventDefault();
-                var json = $('textarea#newLink').val();
-                AddLink(json);
-            });            
             $('#updateAggregateIndex').on('click', function(event) {
                 event.preventDefault();
                 aggregateEventIndex = $('#aggregateIndex').val();
                 restart();
-            });            
+            });
         </script>
 
         <script type="application/json" id="mis">
             {
-                "nodes": [{
-                    "AggregateId": "ceaea287-1796-4d47-9772-bb78543eb3b3",
-                    "AggregateType": "UserAggregate",
-                    "AggregateEvents": [{
-                            "EventType": "UserCreated",
-                            "EventDate": "2019-12-05T19:26:51.7533493+00:00",
-                            "EventData": "{\"UserId\":\"ceaea287-1796-4d47-9772-bb78543eb3b3\",\"CountryCode\":\"DK\"}",
-                            "Sequence": 0,
-                            "Origin": "NewPlatform",
-                            "Attributes": [{
-                                    "Key": "UserId",
-                                    "Value": "ceaea287-1796-4d47-9772-bb78543eb3b3"
-                                },
-                                {
-                                    "Key": "Name",
-                                    "Value": null
-                                },
-                                {
-                                    "Key": "CountryCode",
-                                    "Value": "DK"
-                                },
-                                {
-                                    "Key": "AliasId",
-                                    "Value": null
-                                },
-                                {
-                                    "Key": "IdentityId",
-                                    "Value": null
-                                },
-                                {
-                                    "Key": "Email",
-                                    "Value": null
-                                },
-                                {
-                                    "Key": "IdLevel",
-                                    "Value": null
-                                },
-                                {
-                                    "Key": "IdLevelTime",
-                                    "Value": null
-                                },
-                                {
-                                    "Key": "StateCode",
-                                    "Value": "Registration"
-                                },
-                                {
-                                    "Key": "CreateTime",
-                                    "Value": null
-                                },
-                                {
-                                    "Key": "Blocked",
-                                    "Value": "False"
-                                }
-                            ]
-                        },
-                        {
-                            "EventType": "AliasOnUserUpdatedV2",
-                            "EventDate": "2019-12-05T19:26:52.0462252+00:00",
-                            "EventData": "{\"UserId\":\"ceaea287-1796-4d47-9772-bb78543eb3b3\",\"AliasId\":\"084cea42-6736-4741-bb58-4161c6174bfc\",\"Alias\":\"+4511357173\",\"ChangedBy\":\"ceaea287-1796-4d47-9772-bb78543eb3b3\",\"UpdateTime\":\"2019-12-05T19:26:52.0462252+00:00\"}",
-                            "Sequence": 1,
-                            "Origin": "NewPlatform",
-                            "Attributes": [{
-                                    "Key": "UserId",
-                                    "Value": "ceaea287-1796-4d47-9772-bb78543eb3b3"
-                                },
-                                {
-                                    "Key": "Name",
-                                    "Value": null
-                                },
-                                {
-                                    "Key": "CountryCode",
-                                    "Value": "DK"
-                                },
-                                {
-                                    "Key": "AliasId",
-                                    "Value": "084cea42-6736-4741-bb58-4161c6174bfc"
-                                },
-                                {
-                                    "Key": "IdentityId",
-                                    "Value": null
-                                },
-                                {
-                                    "Key": "Email",
-                                    "Value": null
-                                },
-                                {
-                                    "Key": "IdLevel",
-                                    "Value": null
-                                },
-                                {
-                                    "Key": "IdLevelTime",
-                                    "Value": null
-                                },
-                                {
-                                    "Key": "StateCode",
-                                    "Value": "Registration"
-                                },
-                                {
-                                    "Key": "CreateTime",
-                                    "Value": null
-                                },
-                                {
-                                    "Key": "Blocked",
-                                    "Value": "False"
-                                }
-                            ]
-                        }
-                    ]
-                }],
-                "links": []
+                "AggregateId": "ceaea287-1796-4d47-9772-bb78543eb3b3",
+                "AggregateType": "UserAggregate",
+                "AggregateEvents": [{
+                        "EventType": "UserCreated",
+                        "EventDate": "2019-12-05T19:26:51.7533493+00:00",
+                        "EventData": "{\"UserId\":\"ceaea287-1796-4d47-9772-bb78543eb3b3\",\"CountryCode\":\"DK\"}",
+                        "Sequence": 0,
+                        "Origin": "NewPlatform",
+                        "Attributes": [{
+                                "Key": "UserId",
+                                "Value": "ceaea287-1796-4d47-9772-bb78543eb3b3"
+                            },
+                            {
+                                "Key": "Name",
+                                "Value": null
+                            },
+                            {
+                                "Key": "CountryCode",
+                                "Value": "DK"
+                            },
+                            {
+                                "Key": "AliasId",
+                                "Value": null
+                            },
+                            {
+                                "Key": "IdentityId",
+                                "Value": null
+                            },
+                            {
+                                "Key": "Email",
+                                "Value": null
+                            },
+                            {
+                                "Key": "IdLevel",
+                                "Value": null
+                            },
+                            {
+                                "Key": "IdLevelTime",
+                                "Value": null
+                            },
+                            {
+                                "Key": "StateCode",
+                                "Value": "Registration"
+                            },
+                            {
+                                "Key": "CreateTime",
+                                "Value": null
+                            },
+                            {
+                                "Key": "Blocked",
+                                "Value": "False"
+                            }
+                        ]
+                    },
+                    {
+                        "EventType": "AliasOnUserUpdatedV2",
+                        "EventDate": "2019-12-05T19:26:52.0462252+00:00",
+                        "EventData": "{\"UserId\":\"ceaea287-1796-4d47-9772-bb78543eb3b3\",\"AliasId\":\"084cea42-6736-4741-bb58-4161c6174bfc\",\"Alias\":\"+4511357173\",\"ChangedBy\":\"ceaea287-1796-4d47-9772-bb78543eb3b3\",\"UpdateTime\":\"2019-12-05T19:26:52.0462252+00:00\"}",
+                        "Sequence": 1,
+                        "Origin": "NewPlatform",
+                        "Attributes": [{
+                                "Key": "UserId",
+                                "Value": "ceaea287-1796-4d47-9772-bb78543eb3b3"
+                            },
+                            {
+                                "Key": "Name",
+                                "Value": null
+                            },
+                            {
+                                "Key": "CountryCode",
+                                "Value": "DK"
+                            },
+                            {
+                                "Key": "AliasId",
+                                "Value": "084cea42-6736-4741-bb58-4161c6174bfc"
+                            },
+                            {
+                                "Key": "IdentityId",
+                                "Value": null
+                            },
+                            {
+                                "Key": "Email",
+                                "Value": null
+                            },
+                            {
+                                "Key": "IdLevel",
+                                "Value": null
+                            },
+                            {
+                                "Key": "IdLevelTime",
+                                "Value": null
+                            },
+                            {
+                                "Key": "StateCode",
+                                "Value": "Registration"
+                            },
+                            {
+                                "Key": "CreateTime",
+                                "Value": null
+                            },
+                            {
+                                "Key": "Blocked",
+                                "Value": "False"
+                            }
+                        ]
+                    }
+                ]
             }
         </script>
 
         <script src="/js/main.js"></script>
 
         <script>
-            var mis = document.getElementById('mis').innerHTML;
-            $('textarea#json').val(mis);
-            LoadJson(mis);
 
-            // setTimeout(() => {
-            //     LoadJson(mis);
-            // }, 200);
+            function LoadTable(newNode)
+            {
+                var node = JSON.parse(newNode)
+                var aggregateEvents = node.AggregateEvents;
+
+                $(function () 
+                {
+                    var tbody = $('#table_body');
+                    $.each
+                    (
+                        aggregateEvents, 
+                        function (i, item) 
+                        {
+                            $('<tr>')
+                                .append(
+                                    $('<td>').text(item.EventType),
+                                    $('<td>').text(item.EventDate),
+                                    $('<td>').text(item.Sequence),
+                                    $('<td>').text(item.Origin),
+                                    $('<td>').text(item.EventData))
+                                .appendTo(tbody)
+                                .on('click', 
+                                    function() 
+                                    {
+                                        console.log($(this).children("td").html());
+                                    });
+                        }
+                    )
+                });
+            }
+        </script>
+
+        <script>
+            var mis = document.getElementById('mis').innerHTML;
+            $('textarea#newNode').val(mis);
+            AddNode(mis);
+            LoadTable(mis);
+            // $("#table_body tr td").on('click', function() {
+            //    console.log($(this).children("td").html());
+            // });            
 
         </script>
 
-    </body>
+    </body>>
 </html>
