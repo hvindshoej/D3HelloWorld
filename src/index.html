@@ -37,7 +37,7 @@
             </div>
         </div>
 
-        <table class="table table-sm table-hover table-bordered table-striped m-2" id="binding-table">
+        <table class="table table-sm table-hover table-bordered m-2" id="binding-table">
             <thead>
                 <tr>
                     <th>EventType</th>
@@ -199,7 +199,7 @@
                             $('<tr>')
                                 .append(
                                     $('<td>').text(item.EventType),
-                                    $('<td>').text(item.EventDate),
+                                    $('<td class="EventDate">').text(item.EventDate),
                                     $('<td>').text(item.Sequence),
                                     $('<td>').text(item.Origin),
                                     $('<td>').text(item.EventData))
@@ -207,7 +207,8 @@
                                 .on('click', 
                                     function() 
                                     {
-                                        console.log($(this).children("td").html());
+                                        aggregateEventDate = $(this).children("td.EventDate").html();
+                                        restart();
                                     });
                         }
                     )
@@ -220,10 +221,6 @@
             $('textarea#newNode').val(mis);
             AddNode(mis);
             LoadTable(mis);
-            // $("#table_body tr td").on('click', function() {
-            //    console.log($(this).children("td").html());
-            // });            
-
         </script>
 
     </body>>

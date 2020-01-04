@@ -5,6 +5,7 @@ const lineHeight = 20;
 const textPadding = 12;
 
 var aggregateEventIndex = 0;
+var aggregateEventDate = new Date("2099");
 
 var svg = d3.select("svg");
 var nodes = [];
@@ -72,7 +73,18 @@ function restart()
 
     var text = node.selectAll(".keyvalue")
         .data(
-            d =>  d.AggregateEvents[aggregateEventIndex].Attributes,
+            function(d)
+            {
+                for (let index = d.AggregateEvents.length-1; index >= 0; index--) {
+                    const element = d.AggregateEvents[index];
+
+                    if (aggregateEventDate >= element.EventDate)
+                    {
+                        return element.Attributes;
+                    }
+                }
+                return d.AggregateEvents[d.AggregateEvents.length - 1].Attributes;
+            },
             d => d.Key + "-" + d.Value)
     text.exit().remove();
     text = text
