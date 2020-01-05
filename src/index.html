@@ -25,6 +25,20 @@
                     <input id="aggregateId" type="text" class="form-control" aria-describedby="basic-addon1">
                 </div>            
             </div>
+
+            <ul class="nav nav-pills left m-2">
+                <li class="dropdown">
+                    <a class="dropdown-toggle" id="inp_impact" data-toggle="dropdown">
+                    <i class="icon icon-envelope icon-white"></i>&nbsp;
+                    <span id="dropdown_title">User</span><span class="caret"></span></a>
+                    <ul ID="divNewNotifications" class="dropdown-menu">
+                        <li><a>User</a></li> 
+                        <li><a>Identity</a></li>       
+                        <li><a>Alias</a></li>                         
+                    </ul>
+                </li>            
+            </ul>
+
             <div class="col-sm">
                 <button type="button" id="getAggregate" class="btn btn-primary m-2">Get Aggregate</button>
             </div>
@@ -40,11 +54,15 @@
             $('#getAggregate').on('click', function(event) {
                 event.preventDefault();
                 aggregateId = $('#aggregateId').val();
+                
+                let aggregateType = $('#dropdown_title')[0].innerText;
+                
 
-                $.get("https://localhost:44337/api/v1/management/user?id=" + aggregateId, function(data){
-                    console.log("Data: " + data);
-                    AddJsonNode(data);
-                    LoadTable(data)
+                $.get("https://localhost:44337/api/v1/management/" + aggregateType+ "?id=" + aggregateId, 
+                    function(data){
+                        console.log("Data: " + data);
+                        AddJsonNode(data);
+                        LoadTable(data)
                 });
 
                 restart();
@@ -72,6 +90,11 @@
                     aggregateEventDate = dt.rows(indexes).data()[0][2];
                     restart();
                 });
+
+                $('.dropdown-toggle').dropdown();
+                $('#divNewNotifications li').on('click', function() {
+                    $('#dropdown_title').html($(this).find('a').html());
+                    });
             });
         </script>
         </script>
