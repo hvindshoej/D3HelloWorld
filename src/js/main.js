@@ -9,25 +9,19 @@ var aggregateEventDate = "2099-01-01";
 
 var svg = d3.select("svg");
 var nodes = [];
-var links = [];
 
 var width = document.getElementById('svg').clientWidth;
 var height = document.getElementById('svg').clientHeight;
 
 var simulation = d3.forceSimulation()
     .force("charge", d3.forceManyBody().strength(-2000))
-    .force("link", d3.forceLink().id(function(d) { return d.id; }).distance(400))
     .force("x", d3.forceX())
     .force("y", d3.forceY())
     .on("tick", ticked);
 
-var g = svg.append("g")
-    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-
-var link = g
+var g = svg
     .append("g")
-    .attr("class", "link")
-    .selectAll(".link");
+    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
 var node = g
     .append("g")
@@ -40,21 +34,8 @@ function AddJsonNode(newNode)
     restart();
 }
 
-function AddLink(newLink)
-{
-    links.push(JSON.parse(newLink));
-    restart();
-}
-
 function restart()
 {
-    link = link.data(links);
-    link.exit().remove();
-    link = link
-        .enter()
-        .append("line")
-        .merge(link);
-
     node = node.data(nodes);
     node.exit().remove();
     node = node
@@ -123,7 +104,6 @@ function restart()
             .merge(rect);
 
     simulation.nodes(nodes);
-    simulation.force("link").links(links);
 }
 
 function ticked() 
@@ -131,12 +111,6 @@ function ticked()
     node
         .attr("x", d =>  d.x)
         .attr("y", d =>  d.y);
-
-    link
-        .attr("x1", d => d.source.x + getRectangle(d.source.id).width.animVal.value / 2)
-        .attr("y1", d => d.source.y + getRectangle(d.source.id).height.animVal.value / 2)
-        .attr("x2", d => d.target.x + getRectangle(d.target.id).width.animVal.value / 2)
-        .attr("y2", d => d.target.y + getRectangle(d.target.id).height.animVal.value / 2);
 }
 
 function getRectangle(id) {
