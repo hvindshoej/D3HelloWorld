@@ -31,6 +31,9 @@ gulp.task(MoveJavaScriptTask, function() {
       "node_modules/jquery/dist/jquery.min.js",
       "node_modules/popper.js/dist/umd/popper.min.js",
       "node_modules/d3/dist/d3.min.js",
+      "node_modules/datatables.net/js/jquery.dataTables.min.js",
+      "node_modules/datatables.net-dt/js/dataTables.dataTables.min.js",
+      "node_modules/datatables.net-select/js/dataTables.select.min.js",
       javaScriptSource
     ])
     .pipe(gulp.dest("build/js/"))
@@ -49,7 +52,15 @@ gulp.task(
   gulp.series(
     [MoveSassTask], function() {
     browserSync.init({
-      server: "./build"
+      server: 
+        {
+          baseDir: "./build",
+          middleware: function (req, res, next) {
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            //res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+            next();
+          }
+        }
     });
 
     gulp.watch([scssSource], gulp.series([MoveSassTask]));

@@ -5,7 +5,7 @@ const lineHeight = 20;
 const textPadding = 12;
 
 var aggregateEventIndex = 0;
-var aggregateEventDate = new Date("2099");
+var aggregateEventDate = "2099-01-01";
 
 var svg = d3.select("svg");
 var nodes = [];
@@ -37,6 +37,12 @@ var node = g
 function AddNode(newNode)
 {
     nodes.push(JSON.parse(newNode));
+    restart();
+}
+
+function AddJsonNode(newNode)
+{
+    nodes.push(newNode);
     restart();
 }
 
@@ -78,12 +84,21 @@ function restart()
                 for (let index = d.AggregateEvents.length-1; index >= 0; index--) {
                     const element = d.AggregateEvents[index];
 
-                    if (aggregateEventDate >= element.EventDate)
+                    console.log("selected date: " + aggregateEventDate);
+                    console.log("element.date: " + element.EventDate)
+
+                    if (element.EventDate <= aggregateEventDate)
                     {
                         return element.Attributes;
                     }
                 }
-                return d.AggregateEvents[d.AggregateEvents.length - 1].Attributes;
+
+                return [
+                    {
+                        "Key": d.AggregateId,
+                        "Value": ""
+                    }
+                ];
             },
             d => d.Key + "-" + d.Value)
     text.exit().remove();

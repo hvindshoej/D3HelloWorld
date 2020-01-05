@@ -12,7 +12,10 @@
         <script src="/js/popper.min.js"></script>
         <script src="/js/bootstrap.min.js"></script>
         <script src="/js/d3.min.js"></script>
-
+        <script src="/js/jquery.dataTables.min.js"></script>
+        <script src="/js/dataTables.dataTables.min.js"></script>
+        <script src="/js/dataTables.select.min.js"></script>
+        
         <div class="row">
             <div class="col-sm">
                 <div class="input-group m-2">
@@ -28,17 +31,6 @@
         </div>
 
         <table class="table table-sm table-hover table-bordered m-2" id="binding-table">
-            <thead>
-                <tr>
-                    <th>EventType</th>
-                    <th>EventDate</th>
-                    <th>Sequence</th>
-                    <th>Origin</th>
-                    <th>EventData</th>
-                </tr>
-            </thead>
-            <tbody id="table_body">
-            </tbody>
         </table>
 
         <svg id="svg" width="100%" height="100vh">
@@ -50,12 +42,42 @@
                 aggregateId = $('#aggregateId').val();
 
                 $.get("https://localhost:44337/api/v1/management/user?id=" + aggregateId, function(data){
-                    alert("Data: " + data);
+                    console.log("Data: " + data);
+                    AddJsonNode(data);
+                    LoadTable(JSON.stringify(data))
                 });
 
                 console.log(aggregateId);
 
                 restart();
+            });
+
+            $(document).ready(function () {
+                $('#binding-table')
+                .DataTable({
+                    "paging": false,
+                    "info": false,
+                    "bFilter": false,
+                    "select": true,
+
+                    columns: [
+                        { title: "AggregateId" },
+                        { title: "EventType" },
+                        { title: "EventDate" },
+                        { title: "Sequence" },
+                        { title: "Origin" },
+                        { title: "EventData" }
+                    ]
+                })
+                .on('select.tr', function(e, dt, type, indexes) {
+                    aggregateEventDate = dt.rows(indexes).data()[0][2];
+                    restart();
+                });
+
+                var mis = document.getElementById('mis').innerHTML;
+                $('textarea#newNode').val(mis);
+                AddNode(mis);
+                LoadTable(mis);
             });
         </script>
 
@@ -177,42 +199,24 @@
 
             function LoadTable(newNode)
             {
-                var node = JSON.parse(newNode)
-                var aggregateEvents = node.AggregateEvents;
+                let node = JSON.parse(newNode)
+                let aggregateEvents = node.AggregateEvents;
+                let table = $('#binding-table').DataTable();
 
-                $(function () 
-                {
-                    var tbody = $('#table_body');
-                    $.each
-                    (
-                        aggregateEvents, 
-                        function (i, item) 
-                        {
-                            $('<tr>')
-                                .append(
-                                    $('<td>').text(item.EventType),
-                                    $('<td class="EventDate">').text(item.EventDate),
-                                    $('<td>').text(item.Sequence),
-                                    $('<td>').text(item.Origin),
-                                    $('<td>').text(item.EventData))
-                                .appendTo(tbody)
-                                .on('click', 
-                                    function() 
-                                    {
-                                        aggregateEventDate = $(this).children("td.EventDate").html();
-                                        restart();
-                                    });
-                        }
-                    )
-                });
+                $.each(
+                    aggregateEvents, 
+                    function (i, item) {
+                        console.log("adding item " + item.EventType);
+                        table.row.add([
+                            node.AggregateId,
+                            item.EventType,
+                            item.EventDate,
+                            item.Sequence,
+                            item.Origin,
+                            item.EventData
+                        ]).draw(false);
+                    });
             }
-        </script>
-
-        <script>
-            var mis = document.getElementById('mis').innerHTML;
-            $('textarea#newNode').val(mis);
-            AddNode(mis);
-            LoadTable(mis);
         </script>
 
     </body>>
