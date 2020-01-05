@@ -15,7 +15,7 @@ var width = document.getElementById('svg').clientWidth;
 var height = document.getElementById('svg').clientHeight;
 
 var simulation = d3.forceSimulation()
-    .force("charge", d3.forceManyBody().strength(-10000))
+    .force("charge", d3.forceManyBody().strength(-2000))
     .force("link", d3.forceLink().id(function(d) { return d.id; }).distance(400))
     .force("x", d3.forceX())
     .force("y", d3.forceY())
@@ -26,19 +26,13 @@ var g = svg.append("g")
 
 var link = g
     .append("g")
-        .attr("class", "link")
+    .attr("class", "link")
     .selectAll(".link");
 
 var node = g
     .append("g")
-        .attr("class", "node")
+    .attr("class", "node")
     .selectAll(".node");
-
-function AddNode(newNode)
-{
-    nodes.push(JSON.parse(newNode));
-    restart();
-}
 
 function AddJsonNode(newNode)
 {
@@ -79,37 +73,27 @@ function restart()
 
     var text = node.selectAll(".keyvalue")
         .data(
-            function(d)
-            {
+            function(d) {
                 for (let index = d.AggregateEvents.length-1; index >= 0; index--) {
                     const element = d.AggregateEvents[index];
-
-                    console.log("selected date: " + aggregateEventDate);
-                    console.log("element.date: " + element.EventDate)
 
                     if (element.EventDate <= aggregateEventDate)
                     {
                         return element.Attributes;
                     }
                 }
-
-                return [
-                    {
-                        "Key": d.AggregateId,
-                        "Value": ""
-                    }
-                ];
+                return [{"Key": d.AggregateId, "Value": ""}];
             },
             d => d.Key + "-" + d.Value)
     text.exit().remove();
     text = text
         .enter()
         .append("text")
-            .attr("class", "keyvalue")
-            .attr("y", (d, i) =>  lineHeight + i * lineHeight)
-            .attr("x", textPadding)
-            .attr("stroke-width", "2px")
-            .text(d => d.Key + ": " + d.Value)
+        .attr("class", "keyvalue")
+        .attr("y", (d, i) =>  lineHeight + i * lineHeight)
+        .attr("x", textPadding)
+        .attr("stroke-width", "2px")
+        .text(d => d.Key + ": " + d.Value)
         .merge(text);
 
     text
@@ -140,7 +124,6 @@ function restart()
 
     simulation.nodes(nodes);
     simulation.force("link").links(links);
-    simulation.alpha(1).restart();    
 }
 
 function ticked() 
@@ -156,8 +139,7 @@ function ticked()
         .attr("y2", d => d.target.y + getRectangle(d.target.id).height.animVal.value / 2);
 }
 
-function getRectangle(id)
-{
+function getRectangle(id) {
     var element = document.getElementById(id);
     return element.getElementsByClassName("rectangle")[0];
 }

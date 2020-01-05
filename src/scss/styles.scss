@@ -1,5 +1,10 @@
 // Variable Overrides 
 
+html, body
+{
+    height: 100vh;
+}
+
 .node {
     stroke: #000;
     stroke-width: 1px;
@@ -22,6 +27,12 @@
 .table {
     font-size: xx-small;
 }
+
+svg {
+    flex-grow: 1;
+    width: 100%;
+    height: 70vh;
+  }
 
 // Bootstrap Sass Imports
 @import "node_modules/bootstrap/scss/bootstrap";

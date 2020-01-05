@@ -30,11 +30,11 @@
             </div>
         </div>
 
+        <svg id="svg">
+        </svg>
+
         <table class="table table-sm table-hover table-bordered m-2" id="binding-table">
         </table>
-
-        <svg id="svg" width="100%" height="100vh">
-        </svg>
 
         <script>
             $('#getAggregate').on('click', function(event) {
@@ -44,10 +44,8 @@
                 $.get("https://localhost:44337/api/v1/management/user?id=" + aggregateId, function(data){
                     console.log("Data: " + data);
                     AddJsonNode(data);
-                    LoadTable(JSON.stringify(data))
+                    LoadTable(data)
                 });
-
-                console.log(aggregateId);
 
                 restart();
             });
@@ -59,6 +57,7 @@
                     "info": false,
                     "bFilter": false,
                     "select": true,
+                    "autoWidth": false,
 
                     columns: [
                         { title: "AggregateId" },
@@ -66,149 +65,30 @@
                         { title: "EventDate" },
                         { title: "Sequence" },
                         { title: "Origin" },
-                        { title: "EventData" }
+                        { title: "EventData"}
                     ]
                 })
                 .on('select.tr', function(e, dt, type, indexes) {
                     aggregateEventDate = dt.rows(indexes).data()[0][2];
                     restart();
                 });
-
-                var mis = document.getElementById('mis').innerHTML;
-                $('textarea#newNode').val(mis);
-                AddNode(mis);
-                LoadTable(mis);
             });
         </script>
-
-        <script type="application/json" id="mis">
-            {
-                "AggregateId": "ceaea287-1796-4d47-9772-bb78543eb3b3",
-                "AggregateType": "UserAggregate",
-                "AggregateEvents": [{
-                        "EventType": "UserCreated",
-                        "EventDate": "2019-12-05T19:26:51.7533493+00:00",
-                        "EventData": "{\"UserId\":\"ceaea287-1796-4d47-9772-bb78543eb3b3\",\"CountryCode\":\"DK\"}",
-                        "Sequence": 0,
-                        "Origin": "NewPlatform",
-                        "Attributes": [{
-                                "Key": "UserId",
-                                "Value": "ceaea287-1796-4d47-9772-bb78543eb3b3"
-                            },
-                            {
-                                "Key": "Name",
-                                "Value": null
-                            },
-                            {
-                                "Key": "CountryCode",
-                                "Value": "DK"
-                            },
-                            {
-                                "Key": "AliasId",
-                                "Value": null
-                            },
-                            {
-                                "Key": "IdentityId",
-                                "Value": null
-                            },
-                            {
-                                "Key": "Email",
-                                "Value": null
-                            },
-                            {
-                                "Key": "IdLevel",
-                                "Value": null
-                            },
-                            {
-                                "Key": "IdLevelTime",
-                                "Value": null
-                            },
-                            {
-                                "Key": "StateCode",
-                                "Value": "Registration"
-                            },
-                            {
-                                "Key": "CreateTime",
-                                "Value": null
-                            },
-                            {
-                                "Key": "Blocked",
-                                "Value": "False"
-                            }
-                        ]
-                    },
-                    {
-                        "EventType": "AliasOnUserUpdatedV2",
-                        "EventDate": "2019-12-05T19:26:52.0462252+00:00",
-                        "EventData": "{\"UserId\":\"ceaea287-1796-4d47-9772-bb78543eb3b3\",\"AliasId\":\"084cea42-6736-4741-bb58-4161c6174bfc\",\"Alias\":\"+4511357173\",\"ChangedBy\":\"ceaea287-1796-4d47-9772-bb78543eb3b3\",\"UpdateTime\":\"2019-12-05T19:26:52.0462252+00:00\"}",
-                        "Sequence": 1,
-                        "Origin": "NewPlatform",
-                        "Attributes": [{
-                                "Key": "UserId",
-                                "Value": "ceaea287-1796-4d47-9772-bb78543eb3b3"
-                            },
-                            {
-                                "Key": "Name",
-                                "Value": null
-                            },
-                            {
-                                "Key": "CountryCode",
-                                "Value": "DK"
-                            },
-                            {
-                                "Key": "AliasId",
-                                "Value": "084cea42-6736-4741-bb58-4161c6174bfc"
-                            },
-                            {
-                                "Key": "IdentityId",
-                                "Value": null
-                            },
-                            {
-                                "Key": "Email",
-                                "Value": null
-                            },
-                            {
-                                "Key": "IdLevel",
-                                "Value": null
-                            },
-                            {
-                                "Key": "IdLevelTime",
-                                "Value": null
-                            },
-                            {
-                                "Key": "StateCode",
-                                "Value": "Registration"
-                            },
-                            {
-                                "Key": "CreateTime",
-                                "Value": null
-                            },
-                            {
-                                "Key": "Blocked",
-                                "Value": "False"
-                            }
-                        ]
-                    }
-                ]
-            }
         </script>
 
         <script src="/js/main.js"></script>
 
         <script>
-
             function LoadTable(newNode)
             {
-                let node = JSON.parse(newNode)
-                let aggregateEvents = node.AggregateEvents;
+                let aggregateEvents = newNode.AggregateEvents;
                 let table = $('#binding-table').DataTable();
 
                 $.each(
                     aggregateEvents, 
                     function (i, item) {
-                        console.log("adding item " + item.EventType);
                         table.row.add([
-                            node.AggregateId,
+                            newNode.AggregateId,
                             item.EventType,
                             item.EventDate,
                             item.Sequence,
@@ -219,5 +99,5 @@
             }
         </script>
 
-    </body>>
+    </body>
 </html>
